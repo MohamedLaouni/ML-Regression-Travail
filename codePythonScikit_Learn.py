@@ -145,3 +145,59 @@ plt.title('Régression Polynomiale degré 2 — scikit-learn')
 plt.legend()
 plt.grid(True, alpha=0.3)
 plt.show()
+
+
+
+
+
+#  4) Régression Logistique avec scikit-learn
+print('--------------REGRESSION LOGISTIQUE (SKLEARN)-----------------')
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, log_loss
+
+# ── Étape 1 : Préparer les données ───────────────────────────────
+X = df[['Hours_Studied']].values   # sklearn veut une matrice 2D
+notes = df['Performance_Index'].values
+
+y = (notes >= 50).astype(int)
+
+# ── Étape 2 : Créer et entraîner le modèle ───────────────────────
+model = LogisticRegression()
+model.fit(X, y)
+
+# ── Étape 3 : Récupérer les paramètres a et b ────────────────────
+a = model.coef_[0][0]   # pente
+b = model.intercept_[0] # biais
+
+print("\n=== Résultats ===")
+print("Pente a :", round(a, 4))
+print("Biais  b :", round(b, 4))
+print("Formule : P(réussite) = σ(", round(a, 4), "* x +", round(b, 4), ")")
+
+# ── Étape 4 : Prédictions ────────────────────────────────────────
+y_proba = model.predict_proba(X)[:, 1]   # probabilité classe 1
+y_classe = model.predict(X)
+
+# ── Étape 5 : Évaluation ─────────────────────────────────────────
+acc = accuracy_score(y, y_classe)
+loss = log_loss(y, y_proba)
+
+print("\n=== Évaluation ===")
+print("Accuracy :", round(acc * 100, 2), "%")
+print("Log Loss :", round(loss, 4))
+
+# ── Étape 6 : Visualisation ──────────────────────────────────────
+plt.figure(figsize=(8, 5))
+
+plt.scatter(range(len(y)), y, color='blue', label='Réel (0/1)')
+plt.scatter(range(len(y)), y_proba, color='red', label='Probabilité prédite')
+
+plt.axhline(0.5, linestyle='--', label='Seuil 0.5')
+
+plt.xlabel('Étudiant')
+plt.ylabel('Valeur / Probabilité')
+plt.title('Régression Logistique (scikit-learn)')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
